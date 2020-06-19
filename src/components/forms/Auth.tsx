@@ -1,17 +1,54 @@
-import React from 'react'
+import React, { useState } from 'react'
+import {useDispatch, useSelector} from 'react-redux'
+import {userLoggedIn, userRegistered} from '../../actions/userAction'
+
 
 export const AuthennticationPopUp = () => {
+  const [loading, setLoading] = useState(false)
+  const {error, errorLogin} = useSelector<any>(state => state.user)
+
+  const [userDetails, setUserDetails] = useState({username: '', email: '', password: ''})
+
+  const dispatch = useDispatch()
+
+  const handleRegister = (e: any) => {
+    e.preventDefault()
+    const {username, email, password} = userDetails
+
+    
+    dispatch(userRegistered(username, email, password))
+  } 
+  const handleLogin =  async (e: any) => {
+    e.preventDefault()
+    const {email, password} = userDetails
+     try{
+      dispatch(userLoggedIn(email, password))
+     }catch(error){
+       console.log(error.response.data.message)
+     }
+      
+      
+  }
+
+
+  const handleChange = (e: any) => {
+    setUserDetails({...userDetails, [e.target.name] : e.target.value})
+  }
+
+
     return (
         <>
     <div className="popup" id="sign-popup">
+     
     <h3>Sign In to your Account</h3>
+    {errorLogin && <p>{errorLogin}</p>}
     <div className="popup-form">
-      <form>
+      <form onSubmit={handleLogin}>
         <div className="form-field">
-          <input type="text" name="username" placeholder="Username" />
+          <input type="text" name="email" placeholder="Email" onChange={handleChange} value={userDetails.email} />
         </div>
         <div className="form-field">
-          <input type="text" name="password" placeholder="Password" />
+          <input type="password" name="password" placeholder="Password" onChange={handleChange} value={userDetails.password}  />
         </div>
         <div className="form-cp">
           <div className="form-field">
@@ -32,16 +69,17 @@ export const AuthennticationPopUp = () => {
   </div>
   <div className="popup" id="register-popup">
     <h3>Register</h3>
+    {error && <p>{error}</p>}
     <div className="popup-form">
-      <form>
+      <form onSubmit={handleRegister}>
         <div className="form-field">
-          <input type="text" name="username" placeholder="Username" />
+          <input type="text" name="username" placeholder="Username" onChange={handleChange} value={userDetails.username}  />
         </div>
         <div className="form-field">
-          <input type="text" name="email" placeholder="Email" />
+          <input type="text" name="email" placeholder="Email"  onChange={handleChange} value={userDetails.email} />
         </div>
         <div className="form-field">
-          <input type="text" name="password" placeholder="Password" />
+          <input type="password" name="password" placeholder="Password" onChange={handleChange} value={userDetails.password} />
         </div>
         <div className="form-cp">
           <div className="form-field">
